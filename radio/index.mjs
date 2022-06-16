@@ -4,15 +4,10 @@
     - basic game started in console
 */
 
-//const Message = require('./message.js');
 import Message from './message.js';
-//const xmlrpc = require('xmlrpc');
 import xmlrpc from 'xmlrpc';
-//const readline = require('readline');
 import readline from 'readline';
-//const EventEmitter = require("events");
 import EventEmitter from 'events';
-//const Chess = require('chess.js');
 import { Chess } from 'chess.js';
 
 // setup variables
