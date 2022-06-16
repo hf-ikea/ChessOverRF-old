@@ -61,7 +61,7 @@ class Message {
         // decode our payload, if it exists
         if (this.type === "init" || this.type === "joinGame"|| this.type === "ackJoin") this.payload = null;
         else if (this.type === "gameInfo") {
-            this.payload = unpadCallsign(encodeUtf8(decoded));
+            this.payload = encodeUtf8(decoded).split(",");
         }
     }
 
@@ -82,7 +82,7 @@ class Message {
         byteArray.push(...decodeUtf8(padCallsign(this.callsign)));
         // push the payload
         if(this.type === "gameInfo") {
-            byteArray.push(...decodeUtf8(padCallsign(this.payload)));
+            byteArray.push(...decodeUtf8(this.payload));
         }
         // apply reed-solomon coding
         byteArray.push(...rs.encode(encodeUtf8(byteArray.splice(3))));
@@ -100,6 +100,7 @@ class Message {
     // create a message from a bytestring
     fromByteString(byteString) {
         this.fromBytes(Buffer.from(byteString, "hex"));
+        return this.payload;
     }
 }
 module.exports = Message;

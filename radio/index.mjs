@@ -1,14 +1,19 @@
 /*
     help
     TODO:
-    - create event emitter that emits "message" when a valid packet is recieved
-    - create client loop to manually test it with rl.question
+    - basic game started in console
 */
 
-const Message = require('./message.js');
-const xmlrpc = require('xmlrpc');
-const readline = require('readline');
-const EventEmitter = require("events");
+//const Message = require('./message.js');
+import Message from './message.js';
+//const xmlrpc = require('xmlrpc');
+import xmlrpc from 'xmlrpc';
+//const readline = require('readline');
+import readline from 'readline';
+//const EventEmitter = require("events");
+import EventEmitter from 'events';
+//const Chess = require('chess.js');
+import { Chess } from 'chess.js';
 
 // setup variables
 let pos = 0;
@@ -22,6 +27,8 @@ let rl = readline.promises.createInterface({
     input: process.stdin,
     output: process.stdout
 });
+
+const chess = new Chess();
 
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 
@@ -45,6 +52,7 @@ function asyncRpc(method, params = []) {
 async function beginTransmit(message) {
     await asyncRpc("text.add_tx", [message + "^r"]);
     await asyncRpc("main.tx");
+    transmitting = true;
 }
 
 // turn string into hex
@@ -96,6 +104,26 @@ function runLoops() {
     messageSearchLoop();
 }
 
+async function makeWhiteMove(state) {
+    console.log("It is your turn.");
+    console.log(chess.ascii());
+    let move = await rl.question("SAN Move: ");
+    chess.move(move);
+    let gameMessage = new Message("gameInfo", callsign, ["b", move].join(","));
+    await beginTransmit(gameMessage.toByteString());
+    state.turn = "b";
+}
+
+async function makeBlackMove(state) {
+    console.log("It is your turn.");
+    console.log(chess.ascii());
+    let move = await rl.question("SAN Move: ");
+    chess.move(move);
+    let gameMessage = new Message("gameInfo", callsign, ["b", move].join(","));
+    await beginTransmit(gameMessage.toByteString());
+    state.turn = "b";
+}
+
 async function main() {
     // clear receive buffer from fldigi
     await asyncRpc("text.clear_rx");
@@ -125,7 +153,15 @@ async function main() {
                 state.otherPlayer = message.callsign;
                 let ackMessage = new Message("ackJoin", callsign);
                 await beginTransmit(ackMessage.toByteString());
-                console.log('after transmit');
+                // wait for tx to finish
+                let interval = setInterval(async () => {
+                    // if we're no longer transmitting
+                    if (!transmitting) {
+                        // clear the interval
+                        clearInterval(interval);
+                        await makeWhiteMove(state);
+                    }
+                }, 500);
             }
         });
     } else {
@@ -145,11 +181,13 @@ async function main() {
                 state.joined = (await rl.question("Would you like to join the game? (yes for yes, anything else for no) )") === "yes");
                 if (!state.joined) return;
                 state.host = message.callsign;
+                let joinMessage = new Message("joinGame", callsign);
+                await beginTransmit(joinMessage.toByteString());
             } else if (message.type === "ackJoin" && state.joined) {
                 state.hostJoined = true;
                 state.gameBegun = true;
             } else if (messages.type === "gameInfo") {
-                console.log(message.payload);
+                
             }
         });
         //you gotta actually run the loops homie
