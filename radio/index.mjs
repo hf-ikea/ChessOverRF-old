@@ -84,7 +84,7 @@ async function addToRxBufferLoop() {
 // look for the latest message and process it if it exists loop
 async function messageSearchLoop() {
     let currentMsgs = messages;
-    let packets = currentMsgs.match(/(fa68ff)([a-f0-9][a-f0-9])+(ff68fa)/g);
+    let packets = currentMsgs.match(/(0e6210)([a-f0-9][a-f0-9])+(10620e)/g);
     if (packets === null) return;
     else {
         messages = messages.slice(currentMsgs);

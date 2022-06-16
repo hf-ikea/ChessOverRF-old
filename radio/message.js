@@ -67,7 +67,7 @@ class Message {
 
     // check if a message is a message
     static isMessage(message) {
-        return message[0] === 0xFA && message[1] === 0x68 && message[2] === 0xFF && message[message.length - 3] === 0xFF && message[message.length - 2] === 0x68 && message[message.length - 1] === 0xFA;
+        return message[0] === 0x0E && message[1] === 0x62 && message[2] === 0x10 && message[message.length - 3] === 0x10 && message[message.length - 2] === 0x62 && message[message.length - 1] === 0x0E;
     }
 
     // convert a message to bytes
@@ -75,7 +75,7 @@ class Message {
         // init a byte array
         let byteArray = [];
         // push the header
-        byteArray.push(0xFA, 0x68, 0xFF);
+        byteArray.push(0x0E, 0x62, 0x10);
         // push the message type
         byteArray.push(types.indexOf(this.type));
         // push the callsign
@@ -87,7 +87,7 @@ class Message {
         // apply reed-solomon coding
         byteArray.push(...rs.encode(encodeUtf8(byteArray.splice(3))));
         // push the footer
-        byteArray.push(0xFF, 0x68, 0XFA);
+        byteArray.push(0x10, 0x62, 0x0E);
         // return a buffer from the byte array
         return Buffer.from(byteArray);
     }
