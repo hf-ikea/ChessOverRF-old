@@ -1,0 +1,19 @@
+{
+  "name": "chessoverrf",
+  "version": "1.0.0",
+  "description": "a tool to play chess over amateur radio",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "node index.js",
+    "start": "nodemon index.js"
+  },
+  "author": "Giovanni Forma",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.0",
+    "chess.js": "^0.13.2",
+    "ejs": "^3.1.8",
+    "express": "^4.18.1"
+  }
+}
