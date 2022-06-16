@@ -1,10 +1,8 @@
-const { Chess } = require('chess.js');
+import Message from './radio/message.js';
 
-const chess = new Chess()
+let beans = new Message("init", "BEN");
 
-while (!chess.game_over()) {
-    const moves = chess.moves()
-    const move = moves[Math.floor(Math.random() * moves.length)]
-    chess.move(move)
-}
-console.log(chess.pgn())
+console.log(beans.toByteString());
+beans.fromByteString(beans.toByteString())
+
+console.log(beans.callsign);

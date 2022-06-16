@@ -1,9 +1,9 @@
 import express from 'Express';
-const app = express();
 import fs from 'fs';
 import bodyParser from 'body-parser';
 import { Chess } from 'chess.js';
-import { main } from './radio/index.js';
+
+const app = express();
 const chess = new Chess();
 let whoseTurn = 'w'; 
 
@@ -20,10 +20,9 @@ app.get('/', function(req, res){
         res.send(data);
     });
 });
+
 app.post('/post', function(req, res){
-    let json = JSON.parse('{ "from": "abcd", "to": "abcd" }');
-    json.from = req.body.from;
-    json.to = req.body.to;
+    let json = JSON.parse(`{ "from": "${req.body.from}", "to": "${req.body.to}" }`);
     res.send(validateMove(json, req.body.piece));
 });
 
@@ -42,7 +41,5 @@ function validateMove(moveObject, piece) {
         }
     }
 }
-
-await main();
 
 app.listen(3000);
