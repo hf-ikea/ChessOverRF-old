@@ -17,6 +17,7 @@ let callsign = ""
 let transmitting = false;
 let game = new EventEmitter();
 let state = {};
+const regex = /[0-9a-f]/;
 
 let rl = readline.promises.createInterface({
     input: process.stdin,
@@ -52,12 +53,14 @@ async function beginTransmit(message) {
 
 // turn string into hex
 function convertHex(string) {
-    for (let i = 0; i < string.length; i++) {
-        if (!/[a-f0-9]/.test(string[i])) string[i] = "0";
+    let array = [...string];
+    for (var i = 0; i < array.length; i++) {
+        if(!(/[0-9a-f]/.test(array[i]))) {
+            array[i] = 0;
+        }
     }
-    return string;
+    return array.join("");
 }
-
 
 // check rx loop
 async function checkRxLoop() {
@@ -137,8 +140,12 @@ async function main() {
         // send initialize message
         let initMessage = new Message("init", callsign);
         await beginTransmit(initMessage.toByteString());
+        // clear receive buffer from fldigi
+        await asyncRpc("text.clear_rx");
         // message event
         game.on("message", async (message) => {
+            // clear receive buffer from fldigi
+            await asyncRpc("text.clear_rx");
             // discard any messages we receive from ourself
             if (message.callsign === callsign) return;
             // check if other player sent a joinGame message
@@ -182,7 +189,7 @@ async function main() {
                 state.hostJoined = true;
                 state.gameBegun = true;
             } else if (messages.type === "gameInfo") {
-                
+                console.log(message.payload); 
             }
         });
         //you gotta actually run the loops homie

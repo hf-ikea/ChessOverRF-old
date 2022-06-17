@@ -1,3 +1,10 @@
+import readline from 'readline';
+import Message from './message.js';
+
+const callsign = "bobbo";
+let joinMessage = new Message("joinGame", callsign);
+console.log(joinMessage.toByteString());
+
 /*
 import Message from './radio/message.js';
 
@@ -7,7 +14,7 @@ console.log("ackJoin");
 let ackMessage = new Message("ackJoin", callsign);
 console.log(ackMessage.toByteString());
 */
-
+/*
 import { Chess } from 'chess.js'
 import readline from 'readline';
 import Message from './message.js';
@@ -27,3 +34,4 @@ chess.move(move);
 let gameMessage = new Message("gameInfo", callsign,["b", move].join(","));
 console.log(gameMessage.toByteString());
 console.log(gameMessage.fromByteString(gameMessage.toByteString()));
+*/
